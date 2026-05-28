@@ -3,11 +3,12 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Auth } from '../../../core/services/auth';
 import { ManagerService } from '../../../core/services/manager.service';
+import { ChatbotBubbleComponent } from '../../../shared/chatbot-bubble/chatbot-bubble.component';
 
 @Component({
   selector: 'app-manager-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, ChatbotBubbleComponent],
   templateUrl: './manager-layout.component.html',
   styleUrls: ['./manager-layout.component.css'],
 })

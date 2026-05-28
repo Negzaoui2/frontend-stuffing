@@ -39,6 +39,13 @@ export const routes: Routes = [
 						(m) => m.AdminReportsComponent
 					),
 			},
+			{
+				path: 'settings',
+				loadComponent: () =>
+					import('./features/rh/settings/settings.component').then(
+						(m) => m.SettingsComponent
+					),
+			},
 		],
 	},
 	{
