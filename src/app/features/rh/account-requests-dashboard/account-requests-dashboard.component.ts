@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { AccountRequest, AccountRequestStatus } from '../../../core/models/account-request.model';
+import { FormsModule } from '@angular/forms';
+import { AccountRequest, AccountRequestStatus, ManagerSummary } from '../../../core/models/account-request.model';
 import { AccountRequestsService } from '../../../core/services/account-requests';
 import { NotificationBellComponent } from '../../../shared/notification-bell/notification-bell.component';
 
 @Component({
   selector: 'app-account-requests-dashboard',
   standalone: true,
-  imports: [CommonModule, NotificationBellComponent],
+  imports: [CommonModule, FormsModule, NotificationBellComponent],
   templateUrl: './account-requests-dashboard.component.html',
   styleUrls: ['./account-requests-dashboard.component.css'],
 })
@@ -104,19 +105,67 @@ export class AccountRequestsDashboardComponent implements OnInit {
 
   // --- Actions
 
+  // --- Approve Modal State
+  showApproveModal = false;
+  approveTarget: AccountRequest | null = null;
+  selectedRole = 'COLLABORATEUR';
+  selectedManagerId: number | null = null;
+  managers: ManagerSummary[] = [];
+  managersLoading = false;
+
   openApproveModal(request: AccountRequest): void {
-    const role = prompt('Choisir le rôle:\n1. COLLABORATEUR\n2. MANAGER\n3. ADMIN', '1');
-
-    let selectedRole = 'COLLABORATEUR';
-    if (role === '2') selectedRole = 'MANAGER';
-    else if (role === '3') selectedRole = 'ADMIN';
-
-    const temporaryPassword = prompt('Mot de passe temporaire (laisser vide pour auto-génération) :', '') || undefined;
-
-    this.approveRequest(request.id, { role: selectedRole, temporaryPassword });
+    this.approveTarget = request;
+    this.selectedRole = 'COLLABORATEUR';
+    this.selectedManagerId = null;
+    this.showApproveModal = true;
+    this.loadManagers();
   }
 
-  private approveRequest(id: string | number, data: { role: string; temporaryPassword?: string }): void {
+  closeApproveModal(): void {
+    this.showApproveModal = false;
+    this.approveTarget = null;
+    this.selectedRole = 'COLLABORATEUR';
+    this.selectedManagerId = null;
+  }
+
+  onRoleChange(): void {
+    if (this.selectedRole !== 'COLLABORATEUR') {
+      this.selectedManagerId = null;
+    }
+  }
+
+  private loadManagers(): void {
+    this.managersLoading = true;
+    this.accountRequestsService.getManagers().subscribe({
+      next: (managers) => {
+        this.managers = managers;
+        this.managersLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.managers = [];
+        this.managersLoading = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  submitApproval(): void {
+    if (!this.approveTarget) return;
+
+    const data: { role: string; managerId?: number | null } = {
+      role: this.selectedRole,
+    };
+
+    if (this.selectedRole === 'COLLABORATEUR' && this.selectedManagerId) {
+      data.managerId = this.selectedManagerId;
+    }
+
+    this.approveRequest(this.approveTarget.id, data);
+    this.closeApproveModal();
+  }
+
+  private approveRequest(id: string | number, data: { role: string; managerId?: number | null; temporaryPassword?: string }): void {
     this.isLoading = true;
     this.accountRequestsService.approveRequest(Number(id), data).subscribe({
       next: () => {

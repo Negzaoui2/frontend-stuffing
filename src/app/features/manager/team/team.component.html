@@ -221,12 +221,14 @@
           <div class="assignment-card" *ngFor="let a of selectedCollab.assignments">
             <div class="assignment-header">
               <span class="assignment-project">{{ a.projectName }}</span>
-              <span class="assignment-status"
-                [class.s-active]="a.status === 'ACTIVE'"
-                [class.s-done]="a.status === 'COMPLETED'"
-                [class.s-hold]="a.status === 'ON_HOLD'">
-                {{ a.status === 'ACTIVE' ? 'En cours' : a.status === 'COMPLETED' ? 'Terminé' : 'En pause' }}
-              </span>
+              <ng-container *ngIf="getEffectiveAssignmentStatus(a) as effectiveStatus">
+                <span class="assignment-status"
+                  [class.s-active]="effectiveStatus === 'ACTIVE'"
+                  [class.s-done]="effectiveStatus === 'COMPLETED'"
+                  [class.s-hold]="effectiveStatus === 'ON_HOLD'">
+                  {{ effectiveStatus === 'ACTIVE' ? 'En cours' : effectiveStatus === 'COMPLETED' ? 'Terminé' : 'En pause' }}
+                </span>
+              </ng-container>
             </div>
             <div class="assignment-meta">
               <span *ngIf="a.clientName">{{ a.clientName }}</span>

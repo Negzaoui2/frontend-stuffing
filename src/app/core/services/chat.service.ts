@@ -47,9 +47,10 @@ export class ChatService {
 
     this.http.post<ChatResponse>(`${this.chatbotUrl}/chat`, body).subscribe({
       next: (res) => {
+        console.log('[ChatService] download_url reçu:', res.download_url);
         this.messages.update((msgs) => [
           ...msgs,
-          { role: 'assistant' as const, content: res.answer },
+          { role: 'assistant' as const, content: res.answer, downloadUrl: res.download_url },
         ]);
         if (res.session_id) {
           this.sessionId = res.session_id;

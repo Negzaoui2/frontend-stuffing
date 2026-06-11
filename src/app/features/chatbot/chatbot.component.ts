@@ -20,6 +20,9 @@ import { ChatService } from '../../core/services/chat.service';
 export class ChatbotComponent implements AfterViewChecked {
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
 
+  /** URL de base du backend chatbot */
+  readonly backendUrl = 'http://localhost:8000';
+
   /** Message en cours de saisie */
   userInput = signal('');
 
@@ -56,6 +59,10 @@ export class ChatbotComponent implements AfterViewChecked {
 
   clearChat(): void {
     this.chat.clearChat();
+  }
+
+  openDownload(downloadUrl: string): void {
+    window.open(this.backendUrl + downloadUrl, '_blank');
   }
 
   private scrollToBottom(): void {

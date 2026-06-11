@@ -72,7 +72,7 @@
           <th>Raison</th>
           <th>Statut</th>
           <th>Soumis le</th>
-          <th *ngIf="activeFilter === 'PENDING' || activeFilter === ''">Actions</th>
+          <th *ngIf="activeFilter === 'PENDING' ">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -105,7 +105,7 @@
             <span class="submitted-date">{{ formatDateTime(leave.createdAt) }}</span>
           </td>
           <td *ngIf="activeFilter === 'PENDING' || activeFilter === ''">
-            <div class="actions" *ngIf="leave.status === 'PENDING'">
+            <div class="actions" *ngIf="leave.status === 'PENDING'  ">
               <button class="btn-approve" (click)="openConfirm(leave, 'approve')" title="Approuver">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>

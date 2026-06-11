@@ -174,3 +174,59 @@
       </div>
 
     </main>
+
+    <!-- Approve Modal -->
+    <div class="modal-overlay" *ngIf="showApproveModal" (click)="closeApproveModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Approuver la demande</h2>
+          <button class="modal-close" (click)="closeApproveModal()">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body" *ngIf="approveTarget">
+          <div class="modal-user-info">
+            <div class="modal-avatar">
+              {{ approveTarget.firstName.charAt(0) }}{{ approveTarget.lastName.charAt(0) }}
+            </div>
+            <div>
+              <strong>{{ approveTarget.firstName }} {{ approveTarget.lastName }}</strong>
+              <p>{{ approveTarget.email }}</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="role-select">Rôle à attribuer</label>
+            <select id="role-select" [(ngModel)]="selectedRole" (ngModelChange)="onRoleChange()">
+              <option value="COLLABORATEUR">Collaborateur</option>
+              <option value="DELIVERY_MANAGER">Delivery Manager</option>
+              <option value="ADMIN">Administrateur</option>
+            </select>
+          </div>
+
+          <div class="form-group manager-field" *ngIf="selectedRole === 'COLLABORATEUR'">
+            <label for="manager-select">Assigner à un manager <span class="optional-tag">(optionnel)</span></label>
+            <select id="manager-select" [(ngModel)]="selectedManagerId" [disabled]="managersLoading">
+              <option [ngValue]="null">-- Aucun (assigner plus tard) --</option>
+              <option *ngFor="let mgr of managers" [ngValue]="mgr.id">
+                {{ mgr.firstName }} {{ mgr.lastName }} ({{ mgr.email }})
+              </option>
+            </select>
+            <p class="field-hint" *ngIf="managersLoading">Chargement des managers...</p>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-cancel" (click)="closeApproveModal()">Annuler</button>
+          <button class="btn-confirm" (click)="submitApproval()">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+            </svg>
+            Confirmer l'approbation
+          </button>
+        </div>
+      </div>
+    </div>

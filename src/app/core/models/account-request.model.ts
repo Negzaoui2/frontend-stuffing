@@ -31,6 +31,14 @@ export enum AccountRequestStatus {
 export interface ApproveRequestDto {
   role: string;
   temporaryPassword?: string;
+  managerId?: number | null;
+}
+
+export interface ManagerSummary {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
 }
 
 export interface RejectRequestDto {

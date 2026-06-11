@@ -100,7 +100,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.isDetailOpen = true;
     this.isDetailLoading = true;
     this.managerService.getProject(project.id).subscribe({
-      next: (full) => { this.selectedProject = full; this.isDetailLoading = false; this.cdr.detectChanges(); },
+      next: (full) => { this.selectedProject = full;   
+ this.isDetailLoading = false; this.cdr.detectChanges(); },
       error: () => { this.isDetailLoading = false; this.cdr.detectChanges(); },
     });
   }
@@ -223,7 +224,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   loadAvailableCollaborators(): void {
     this.loadingCollaborators = true;
-    this.managerService.getTeam({ page: 0, size: 100, availability: 'AVAILABLE' }).subscribe({
+    this.managerService.getTeam({ page: 0, size: 100 }).subscribe({
       next: (res) => {
         this.availableCollaborators = res.items ?? [];
         this.loadingCollaborators = false;

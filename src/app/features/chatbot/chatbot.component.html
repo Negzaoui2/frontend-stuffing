@@ -44,6 +44,11 @@
         }
         <div class="message-bubble" [class.user-bubble]="msg.role === 'user'" [class.bot-bubble]="msg.role === 'assistant'">
           <div class="message-content" [innerHTML]="msg.content"></div>
+          @if (msg.downloadUrl) {
+            <a class="btn-download" [href]="backendUrl + msg.downloadUrl" target="_blank" rel="noopener">
+              <span class="download-icon">📥</span> Télécharger le fichier
+            </a>
+          }
         </div>
       </div>
     }

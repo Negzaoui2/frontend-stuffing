@@ -54,6 +54,9 @@
         <div class="msg-avatar" *ngIf="msg.role === 'assistant'">🤖</div>
         <div class="msg-bubble" [ngClass]="msg.role === 'user' ? 'bubble-user' : 'bubble-bot'">
           <div class="msg-content" [innerHTML]="msg.content"></div>
+          <a *ngIf="msg.downloadUrl" class="btn-download" [href]="'http://localhost:8000' + msg.downloadUrl" target="_blank" rel="noopener">
+            <span class="download-icon">📥</span> Télécharger le fichier
+          </a>
         </div>
       </div>
     </ng-container>

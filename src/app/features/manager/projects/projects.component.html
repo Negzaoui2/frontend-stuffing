@@ -253,16 +253,17 @@
             Assigner
           </button>
         </div>
-        <div *ngIf="selectedProject.team && selectedProject.team.length > 0">
+        <div >
           <div class="member-row" *ngFor="let m of selectedProject.team">
             <div class="member-avatar">{{ getMemberInitials(m) }}</div>
             <div class="member-info">
               <span class="member-name">{{ m.firstName }} {{ m.lastName }}</span>
               <span class="member-role">{{ m.role }}</span>
+              
             </div>
             <button class="btn-remove" title="Retirer"
                     [disabled]="unassigningId === m.assignmentId"
-                    (click)="unassign(m.assignmentId!)" *ngIf="m.assignmentId">
+                    (click)="unassign(m.assignmentId!)" >
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
               </svg>

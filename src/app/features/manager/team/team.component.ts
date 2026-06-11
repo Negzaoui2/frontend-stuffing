@@ -134,6 +134,17 @@ export class TeamComponent implements OnInit, OnDestroy {
     return this.collaborators.filter(c => c.availability === 'SOON_AVAILABLE').length;
   }
 
+  getEffectiveAssignmentStatus(a: { status: string; endDate?: string | null }): 'ACTIVE' | 'COMPLETED' | 'ON_HOLD' {
+    if (a.status === 'ACTIVE' && a.endDate) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (new Date(a.endDate) < today) {
+        return 'COMPLETED';
+      }
+    }
+    return a.status as 'ACTIVE' | 'COMPLETED' | 'ON_HOLD';
+  }
+
   ngOnDestroy(): void {
     if (this.searchTimeout) clearTimeout(this.searchTimeout);
   }

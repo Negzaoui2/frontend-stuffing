@@ -3,6 +3,7 @@
 export interface HistoryMessage {
   role: 'user' | 'assistant';
   content: string;
+  downloadUrl?: string | null;
 }
 
 export interface ChatRequest {
@@ -24,4 +25,5 @@ export interface ChatResponse {
   retrieved: RetrievedItem[];
   used_llm: boolean;
   session_id: string | null;
+  download_url: string | null;
 }

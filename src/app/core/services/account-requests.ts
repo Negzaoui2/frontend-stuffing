@@ -7,6 +7,7 @@ import {
   AccountRequestStatus,
   ApproveRequestDto,
   RejectRequestDto,
+  ManagerSummary,
 } from '../models/account-request.model';
 
 export interface PageResponse<T> {
@@ -97,5 +98,9 @@ export class AccountRequestsService {
 
   rejectRequest(id: number | string, data: RejectRequestDto): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/${id}/reject`, data ?? {});
+  }
+
+  getManagers(): Observable<ManagerSummary[]> {
+    return this.http.get<ManagerSummary[]>(`${environment.apiUrl}/hr/managers`);
   }
 }
