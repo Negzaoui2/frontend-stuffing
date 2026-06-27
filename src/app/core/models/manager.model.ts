@@ -1,7 +1,7 @@
 /* ===== Manager-specific models ===== */
 
 export type AvailabilityStatus = 'STAFFED' | 'AVAILABLE' | 'SOON_AVAILABLE';
-export type ProjectStatus = 'ACTIVE' | 'COMPLETED' | 'ON_HOLD' | 'PLANNED';
+export type ProjectStatus = 'ACTIVE' | 'COMPLETED' | 'ON_HOLD' | 'PLANNED' | 'ARCHIVED';
 
 /** Collaborateur dans l'équipe du manager */
 export interface Collaborator {

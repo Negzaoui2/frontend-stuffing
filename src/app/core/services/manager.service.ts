@@ -80,6 +80,11 @@ export class ManagerService {
     return this.http.put<Project>(`${this.baseUrl}/projects/${id}`, dto);
   }
 
+  /** Supprimer (archiver) un projet */
+  deleteProject(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/projects/${id}`);
+  }
+
   /** Changer le statut d'un projet */
   changeProjectStatus(id: number, status: ProjectStatus): Observable<Project> {
     return this.http.patch<Project>(`${this.baseUrl}/projects/${id}/status`, null, {

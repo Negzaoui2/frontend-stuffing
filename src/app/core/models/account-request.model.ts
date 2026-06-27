@@ -32,6 +32,7 @@ export interface ApproveRequestDto {
   role: string;
   temporaryPassword?: string;
   managerId?: number | null;
+  departementId?: number | null;
 }
 
 export interface ManagerSummary {

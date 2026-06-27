@@ -98,6 +98,13 @@
                 </div>
               </div>
             }
+            @if (selectedAssignment.status === 'ACTIVE') {
+              <div class="modal-actions">
+                <button class="btn-complete" (click)="completeAssignment()" [disabled]="completingId === selectedAssignment.id">
+                  {{ completingId === selectedAssignment.id ? 'En cours...' : 'Marquer comme terminée' }}
+                </button>
+              </div>
+            }
           </div>
         }
       </div>

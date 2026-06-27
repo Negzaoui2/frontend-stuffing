@@ -21,6 +21,7 @@ export class CollabAssignmentsComponent implements OnInit {
   showDetail = false;
   detailLoading = false;
   selectedAssignment: AssignmentDetail | null = null;
+  completingId: number | null = null;
 
   constructor(private svc: CollaboratorService, private cdr: ChangeDetectorRef) {}
 
@@ -47,7 +48,22 @@ export class CollabAssignmentsComponent implements OnInit {
     });
   }
 
-  closeDetail(): void { this.showDetail = false; this.selectedAssignment = null; }
+  closeDetail(): void { this.showDetail = false; this.selectedAssignment = null; this.completingId = null; }
+
+  completeAssignment(): void {
+    if (!this.selectedAssignment || this.completingId !== null) return;
+    this.completingId = this.selectedAssignment.id;
+    this.svc.completeAssignment(this.selectedAssignment.id).subscribe({
+      next: () => {
+        this.closeDetail();
+        this.load();
+      },
+      error: () => {
+        this.completingId = null;
+        this.cdr.detectChanges();
+      },
+    });
+  }
 
   get totalPages(): number { return Math.ceil(this.total / this.size); }
   prevPage(): void { if (this.page > 0) { this.page--; this.load(); } }

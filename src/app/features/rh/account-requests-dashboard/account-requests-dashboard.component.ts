@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AccountRequest, AccountRequestStatus, ManagerSummary } from '../../../core/models/account-request.model';
-import { AccountRequestsService } from '../../../core/services/account-requests';
+import { AccountRequest, AccountRequestStatus, ManagerSummary, ApproveRequestDto } from '../../../core/models/account-request.model';
+import { AccountRequestStats, AccountRequestsService } from '../../../core/services/account-requests';
+import { Departement } from '../../../core/models/departement.model';
+import { DepartementService } from '../../../core/services/departement.service';
 import { NotificationBellComponent } from '../../../shared/notification-bell/notification-bell.component';
 
 @Component({
@@ -15,6 +17,12 @@ import { NotificationBellComponent } from '../../../shared/notification-bell/not
 export class AccountRequestsDashboardComponent implements OnInit {
   isLoading = true;
   errorMessage = '';
+  stats: AccountRequestStats = {
+    total: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+  };
 
   // Données affichées (page actuelle si pagination)
   requests: AccountRequest[] = [];
@@ -28,10 +36,27 @@ export class AccountRequestsDashboardComponent implements OnInit {
   total = 0;
   sort = 'createdAt,DESC';
 
-  constructor(private accountRequestsService: AccountRequestsService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private accountRequestsService: AccountRequestsService,
+    private departementService: DepartementService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
+    this.loadStats();
     this.load();
+  }
+
+  loadStats(): void {
+    this.accountRequestsService.getStats().subscribe({
+      next: (stats) => {
+        this.stats = stats;
+        this.cdr.detectChanges();
+      },
+      error: (err: unknown) => {
+        console.error('Erreur chargement statistiques demandes:', err);
+      },
+    });
   }
 
   load(): void {
@@ -113,12 +138,19 @@ export class AccountRequestsDashboardComponent implements OnInit {
   managers: ManagerSummary[] = [];
   managersLoading = false;
 
+  // Départements
+  selectedDepartementId: number | null = null;
+  departements: Departement[] = [];
+  departementsLoading = false;
+
   openApproveModal(request: AccountRequest): void {
     this.approveTarget = request;
     this.selectedRole = 'COLLABORATEUR';
     this.selectedManagerId = null;
+    this.selectedDepartementId = null;
     this.showApproveModal = true;
     this.loadManagers();
+    this.loadDepartements();
   }
 
   closeApproveModal(): void {
@@ -126,11 +158,17 @@ export class AccountRequestsDashboardComponent implements OnInit {
     this.approveTarget = null;
     this.selectedRole = 'COLLABORATEUR';
     this.selectedManagerId = null;
+    this.selectedDepartementId = null;
   }
 
   onRoleChange(): void {
+    // Le manager n'est pertinent que pour un collaborateur
     if (this.selectedRole !== 'COLLABORATEUR') {
       this.selectedManagerId = null;
+    }
+    // Le département n'est proposé que pour collaborateur et manager
+    if (this.selectedRole !== 'COLLABORATEUR' && this.selectedRole !== 'DELIVERY_MANAGER') {
+      this.selectedDepartementId = null;
     }
   }
 
@@ -150,33 +188,57 @@ export class AccountRequestsDashboardComponent implements OnInit {
     });
   }
 
+  private loadDepartements(): void {
+    this.departementsLoading = true;
+    this.departementService.getAll().subscribe({
+      next: (departements) => {
+        this.departements = departements ?? [];
+        this.departementsLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.departements = [];
+        this.departementsLoading = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
   submitApproval(): void {
     if (!this.approveTarget) return;
 
-    const data: { role: string; managerId?: number | null } = {
+    const data: ApproveRequestDto = {
       role: this.selectedRole,
     };
 
-    if (this.selectedRole === 'COLLABORATEUR' && this.selectedManagerId) {
-      data.managerId = this.selectedManagerId;
+    // Le manager n'est envoyé que pour un collaborateur
+    if (this.selectedRole === 'COLLABORATEUR') {
+      data.managerId = this.selectedManagerId ?? null;
+    }
+
+    // Le département est envoyé pour collaborateur et manager
+    if (this.selectedRole === 'COLLABORATEUR' || this.selectedRole === 'DELIVERY_MANAGER') {
+      data.departementId = this.selectedDepartementId ?? null;
     }
 
     this.approveRequest(this.approveTarget.id, data);
     this.closeApproveModal();
   }
 
-  private approveRequest(id: string | number, data: { role: string; managerId?: number | null; temporaryPassword?: string }): void {
+  private approveRequest(id: string | number, data: ApproveRequestDto): void {
     this.isLoading = true;
     this.accountRequestsService.approveRequest(Number(id), data).subscribe({
       next: () => {
         alert('Demande approuvée avec succès');
         this.isLoading = false;
+        this.loadStats();
         this.load(); // 🔁 recharge avec filtre courant
       },
       error: (err: unknown) => {
         console.error('Erreur approbation:', err);
         this.isLoading = false;
-        alert('Erreur lors de l\'approbation de la demande');
+        const e = err as { error?: { message?: string } };
+        alert(e?.error?.message?.trim() || 'Erreur lors de l\'approbation de la demande');
       }
     });
   }
@@ -192,6 +254,7 @@ export class AccountRequestsDashboardComponent implements OnInit {
       next: () => {
         alert('Demande rejetée avec succès');
         this.isLoading = false;
+        this.loadStats();
         this.load(); // 🔁 recharge avec filtre courant
       },
       error: (err: unknown) => {

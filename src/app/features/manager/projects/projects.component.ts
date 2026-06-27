@@ -22,6 +22,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   searchQuery = '';
   statusFilter = '';
+  deletingProjectId: number | null = null;
 
   // Detail panel
   selectedProject: Project | null = null;
@@ -304,6 +305,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       COMPLETED: 'Terminé',
       ON_HOLD: 'En pause',
       PLANNED: 'Planifié',
+      ARCHIVED: 'Archivé',
     };
     return map[status] || status;
   }
@@ -314,8 +316,31 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       COMPLETED: 'status-done',
       ON_HOLD: 'status-hold',
       PLANNED: 'status-planned',
+      ARCHIVED: 'status-archived',
     };
     return map[status] || '';
+  }
+
+  deleteProject(): void {
+    if (!this.selectedProject) return;
+    const msg = 'Êtes-vous sûr de vouloir supprimer ce projet ? \nLe projet sera archivé et toutes les affectations actives seront clôturées. Cette action ne peut pas être annulée facilement.';
+    if (!confirm(msg)) return;
+
+    this.deletingProjectId = this.selectedProject.id;
+    this.managerService.deleteProject(this.selectedProject.id).subscribe({
+      next: () => {
+        this.deletingProjectId = null;
+        this.closeDetail();
+        this.showSuccess('Projet archivé avec succès');
+        this.load();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.deletingProjectId = null;
+        this.showError('Erreur lors de l\'archivage du projet');
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   get activeCount(): number {

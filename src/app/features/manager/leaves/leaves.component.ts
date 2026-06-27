@@ -19,7 +19,7 @@ export class ManagerLeavesComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  activeFilter: LeaveStatus | '' = 'PENDING';
+  activeFilter: LeaveStatus | '' = '';
 
   // Confirmation modal
   showConfirmModal = false;

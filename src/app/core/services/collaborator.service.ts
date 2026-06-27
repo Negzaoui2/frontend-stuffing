@@ -39,6 +39,10 @@ export class CollaboratorService {
     return this.http.get<AssignmentDetail>(`${this.base}/assignments/${id}`);
   }
 
+  completeAssignment(id: number): Observable<any> {
+    return this.http.post(`${this.base}/assignments/${id}/complete`, {});
+  }
+
   // ─── Calendar ───────────────────────
   getCalendarEvents(start: string, end: string): Observable<CollaboratorCalendarEvent[]> {
     const p = new HttpParams().set('start', start).set('end', end);

@@ -33,6 +33,13 @@ export const routes: Routes = [
 					),
 			},
 			{
+				path: 'departements',
+				loadComponent: () =>
+					import('./features/rh/departments/departements.component').then(
+						(m) => m.DepartementsComponent
+					),
+			},
+			{
 				path: 'reports',
 				loadComponent: () =>
 					import('./features/rh/reports/reports.component').then(
@@ -92,6 +99,13 @@ export const routes: Routes = [
 					import(
 						'./features/manager/leaves/leaves.component'
 					).then((m) => m.ManagerLeavesComponent),
+			},
+			{
+				path: 'analytics',
+				loadComponent: () =>
+					import(
+						'./features/manager/analytics/analytics.component'
+					).then((m) => m.AnalyticsComponent),
 			},
 		],
 	},

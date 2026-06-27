@@ -24,7 +24,7 @@
       <div class="page-header">
         <div class="page-title-block">
           <h1>Gestion des accès</h1>
-          <p class="page-subtitle">{{ total }} demande(s) au total · Dernière mise à jour à l'instant</p>
+          <p class="page-subtitle">{{ stats.total }} demande(s) au total · Dernière mise à jour à l'instant</p>
         </div>
       </div>
 
@@ -37,7 +37,7 @@
             </svg>
           </div>
           <div class="stat-body">
-            <div class="stat-value">{{ total }}</div>
+            <div class="stat-value">{{ stats.total }}</div>
             <div class="stat-label">Total demandes</div>
           </div>
         </div>
@@ -48,7 +48,7 @@
             </svg>
           </div>
           <div class="stat-body">
-            <div class="stat-value">{{ pendingCount }}</div>
+            <div class="stat-value">{{ stats.pending }}</div>
             <div class="stat-label">En attente</div>
           </div>
         </div>
@@ -59,8 +59,19 @@
             </svg>
           </div>
           <div class="stat-body">
-            <div class="stat-value">{{ approvedCount }}</div>
+            <div class="stat-value">{{ stats.approved }}</div>
             <div class="stat-label">Approuvées</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon rejected">
+            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4m0 4h.01"/>
+            </svg>
+          </div>
+          <div class="stat-body">
+            <div class="stat-value">{{ stats.rejected }}</div>
+            <div class="stat-label">Rejetées</div>
           </div>
         </div>
       </div>
@@ -69,16 +80,16 @@
       <div class="filter-bar">
         <span class="filter-label">Filtrer :</span>
         <button class="btn-filter" [class.active]="filterStatus === null" (click)="filterByStatus(null)">
-          Toutes <span class="badge">{{ total }}</span>
+          Toutes <span class="badge">{{ stats.total }}</span>
         </button>
         <button class="btn-filter" [class.active]="filterStatus === 'PENDING'" (click)="filterByStatus('PENDING')">
-          En attente <span class="badge">{{ pendingCount }}</span>
+          En attente <span class="badge">{{ stats.pending }}</span>
         </button>
         <button class="btn-filter" [class.active]="filterStatus === 'APPROVED'" (click)="filterByStatus('APPROVED')">
-          Approuvées <span class="badge">{{ approvedCount }}</span>
+          Approuvées <span class="badge">{{ stats.approved }}</span>
         </button>
         <button class="btn-filter" [class.active]="filterStatus === 'REJECTED'" (click)="filterByStatus('REJECTED')">
-          Rejetées <span class="badge">{{ rejectedCount }}</span>
+          Rejetées <span class="badge">{{ stats.rejected }}</span>
         </button>
       </div>
 
@@ -216,6 +227,17 @@
               </option>
             </select>
             <p class="field-hint" *ngIf="managersLoading">Chargement des managers...</p>
+          </div>
+
+          <div class="form-group departement-field" *ngIf="selectedRole === 'COLLABORATEUR' || selectedRole === 'DELIVERY_MANAGER'">
+            <label for="departement-select">Affecter un département <span class="optional-tag">(optionnel)</span></label>
+            <select id="departement-select" [(ngModel)]="selectedDepartementId" [disabled]="departementsLoading">
+              <option [ngValue]="null">-- Aucun (affecter plus tard) --</option>
+              <option *ngFor="let dep of departements" [ngValue]="dep.id">
+                {{ dep.name }}
+              </option>
+            </select>
+            <p class="field-hint" *ngIf="departementsLoading">Chargement des départements...</p>
           </div>
         </div>
 

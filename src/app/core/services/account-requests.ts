@@ -18,6 +18,13 @@ export interface PageResponse<T> {
   size: number;   // taille de page
 }
 
+export interface AccountRequestStats {
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AccountRequestsService {
   private apiUrl = `${environment.apiUrl}/hr/account-requests`;
@@ -90,6 +97,10 @@ export class AccountRequestsService {
         return { items: [], total: 0, page: opts?.page ?? 0, size: opts?.size ?? 10 };
       })
     );
+  }
+
+  getStats(): Observable<AccountRequestStats> {
+    return this.http.get<AccountRequestStats>(`${this.apiUrl}/stats`);
   }
 
   approveRequest(id: number | string, data: ApproveRequestDto): Observable<void> {
